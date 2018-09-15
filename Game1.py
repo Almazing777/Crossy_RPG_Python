@@ -35,7 +35,7 @@ class Game:
 
         player_character = PlayerCharacter('./Images/player.png', 375, 700, 50, 50)
         enemy_0 = NonPlayerCharacter('./Images/enemy.png', 20, 400, 50, 50)
-
+        treasure = GameObject('./Images/treasure.png', 375, 50, 50, 50)
 
         # Main game loop, used to update all gameplay such as movement, checks, and graphhics
         # Runs until is_game_over = True
@@ -58,6 +58,9 @@ class Game:
 
             # redraw the screen to be a blank 
             self.game_screen.fill(WHITE_COLOR)
+
+            treasure.draw(self.game_screen)
+
             #update the player position
             player_character.move(direction, self.height)
 
@@ -66,6 +69,12 @@ class Game:
 
             enemy_0.move(self.width)
             enemy_0.draw(self.game_screen)
+
+            if player_character.detect_collision(enemy_0):
+                is_game_over = True
+            elif player_character.detect_collision(treasure):
+                is_game_over = True
+
 
             # Update all game graphics
             pygame.display.update()
@@ -107,8 +116,21 @@ class PlayerCharacter(GameObject):
             self.y_pos += self.SPEED
 
         # keeps the character in the game screen
-        if self.y_pos >= max_height - 20:
-            self.y_pos = max_height - 20
+        if self.y_pos >= max_height - 40:
+            self.y_pos = max_height - 40
+
+    def detect_collision(self, other_body):
+        if self.y_pos > other_body.y_pos + other_body.height:
+            return False
+        elif self.y_pos + self.height < other_body.y_pos:
+            return False
+
+        if self.x_pos > other_body.x_pos + other_body.width:
+            return False
+        elif self.x_pos + self.width < other_body.x_pos:
+            return False
+        
+        return True
 
 class NonPlayerCharacter(GameObject):
     
@@ -122,7 +144,7 @@ class NonPlayerCharacter(GameObject):
     def move(self, max_width):
         if self.x_pos <= 20:
             self.SPEED = abs(self.SPEED) # abs makes sure it's always positive
-        elif self.x_pos >= max_width - 20:
+        elif self.x_pos >= max_width - 40:
             self.SPEED = -abs(self.SPEED)
         self.x_pos += self.SPEED
 
