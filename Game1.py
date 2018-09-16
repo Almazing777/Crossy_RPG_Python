@@ -36,13 +36,22 @@ class Game:
         self.image = pygame.transform.scale(background_image, (width, height))
 
 
-    def run_game_loop(self):
+    def run_game_loop(self, level_speed):
         is_game_over = False
         did_win = False
         direction = 0
 
         player_character = PlayerCharacter('./Images/player.png', 375, 700, 50, 50)
-        enemy_0 = NonPlayerCharacter('./Images/enemy.png', 20, 400, 50, 50)
+        enemy_0 = NonPlayerCharacter('./Images/enemy.png', 20, 600, 50, 50)
+        enemy_0.SPEED *= level_speed
+
+        enemy_1 = NonPlayerCharacter('./Images/enemy.png', self.width - 40, 400, 50, 50)
+        enemy_1.SPEED *= level_speed
+
+        enemy_2 = NonPlayerCharacter('./Images/enemy.png', 20, 200, 50, 50)
+        enemy_2.SPEED *= level_speed
+
+
         treasure = GameObject('./Images/treasure.png', 375, 50, 50, 50)
 
         # Main game loop, used to update all gameplay such as movement, checks, and graphhics
@@ -81,6 +90,14 @@ class Game:
             enemy_0.move(self.width)
             enemy_0.draw(self.game_screen)
 
+            if level_speed > 2:
+                enemy_1.move(self.width)
+                enemy_1.draw(self.game_screen)
+            if level_speed > 4:
+                enemy_2.move(self.width)
+                enemy_2.draw(self.game_screen)
+
+
             if player_character.detect_collision(enemy_0):
                 is_game_over = True
                 did_win = False
@@ -105,7 +122,7 @@ class Game:
             clock.tick(self.TICK_RATE)
 
         if did_win:
-            self.run_game_loop()
+            self.run_game_loop(level_speed + 0.5)
         else:
             return
 
@@ -178,7 +195,7 @@ class NonPlayerCharacter(GameObject):
 pygame.init()
 
 new_game = Game('./Images/background.png', SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT)
-new_game.run_game_loop()
+new_game.run_game_loop(1)
 
 pygame.quit()
 quit()
